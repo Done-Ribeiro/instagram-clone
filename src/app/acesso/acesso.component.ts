@@ -39,7 +39,7 @@ export class AcessoComponent implements OnInit {
   }
 
   public exibirPainel(event: string): void {
-    console.log('Parametro recebido no componente pai é: ', event)
+    this.cadastro = event === 'cadastro' ? true : false
   }
 
 }
