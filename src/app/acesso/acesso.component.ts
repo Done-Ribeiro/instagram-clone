@@ -38,4 +38,8 @@ export class AcessoComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  public exibirPainel(event: string): void {
+    console.log('Parametro recebido no componente pai é: ', event)
+  }
+
 }
