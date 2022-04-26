@@ -3,6 +3,6 @@ export class Usuario {
     public email: string,
     public nome_completo: string,
     public nome_usuario: string,
-    public senha: string
+    public senha: any//trocando pra any, pra poder deletarmos antes de salvar no banco de dados
   ) { }
 }
