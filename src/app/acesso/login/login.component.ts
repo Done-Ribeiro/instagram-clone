@@ -17,6 +17,8 @@ export class LoginComponent implements OnInit {
     'senha': new FormControl(null)
   })
 
+  public mensagem!: string
+
   constructor(
     private autenticacao: Autenticacao
   ) { }
@@ -33,6 +35,7 @@ export class LoginComponent implements OnInit {
       this.formulario.value.email,
       this.formulario.value.senha
     )
+      .then((resposta: any) => this.mensagem = resposta)
   }
 
 }
