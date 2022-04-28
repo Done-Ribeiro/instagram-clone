@@ -43,7 +43,8 @@
     </form>
     <hr />
 
-    <p class="small text-center">Ao cadastrar-se, você concorda com nossos <b>Termos</b> e <b>Política de Privacidade</b>.</p>
+    <p class="small text-center" *ngIf="!mensagem">Ao cadastrar-se, você concorda com nossos <b>Termos</b> e <b>Política de Privacidade</b>.</p>
+    <p class="small text-danger text-center">{{ mensagem }}</p>
 
   </div>
 </div>

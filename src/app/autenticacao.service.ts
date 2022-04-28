@@ -36,7 +36,7 @@ export class Autenticacao {
         firebase.database().ref(`usuario_detalhe/${btoa(usuario.email)}`)
           .set(usuario)//set() -> metodo p/ salvar e nao ter referencias duplicadas de usuarios
       })
-      .catch((error: Error) => console.log(error))
+      .catch((error: Error) => error)
   }
 
   public autenticar(email: string, senha: string): Promise<any> {

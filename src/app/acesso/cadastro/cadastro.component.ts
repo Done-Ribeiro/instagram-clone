@@ -13,6 +13,8 @@ export class CadastroComponent implements OnInit {
 
   @Output() public exibirPainel: EventEmitter<string> = new EventEmitter<string>()
 
+  public mensagem!: any
+
   public formulario: FormGroup = new FormGroup({
     'email': new FormControl(null, [
       Validators.required
@@ -48,7 +50,13 @@ export class CadastroComponent implements OnInit {
     )
 
     this.autenticacao.cadastrarUsuario(usuario)
-      .then(() => this.exibirPainelLogin())
+      .then((erro: Error) => {
+        if (erro) {
+          this.mensagem = erro
+        } else {
+          this.exibirPainelLogin()
+        }
+      })
   }
 
 }
