@@ -6,6 +6,9 @@ import * as firebase from 'firebase'
 import { Bd } from 'src/app/bd.service'
 import { Progresso } from 'src/app/progresso.service'
 
+import { interval, Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators'
+
 @Component({
   selector: 'app-incluir-publicacao',
   templateUrl: './incluir-publicacao.component.html',
@@ -46,8 +49,42 @@ export class IncluirPublicacaoComponent implements OnInit {
       imagem: this.imagem[0]
     })
 
-    console.log(this.progresso.status)
-    console.log(this.progresso.estado)
+    /**
+     * o interval fara neste caso, a casa 1.5s incrementar um int de forma sequencial
+     * porem estamos interessados na habilidade de desparar um evento a cada 1.5s
+     * que eh algo semelhante ao setTimeout,
+     * so que ao invez de utilizar o setTimeout,
+     * utilizaremos um Observable
+     */
+    let acompanhamentoUpload = interval(1500)
+
+    /**
+     * Subject -> serve para submeter valores, para nosso observable
+     * vamos criar um subject para ajudar a efetuar o unsubscribe
+     */
+    let continua = new Subject();
+    continua.next(true);//produz um evento com o valor de true
+
+    /**
+     * agora vamos assinar o observable
+     *
+     * como o interval nao preve uma parada, precisamos forçar que ele pare
+     * quando o status === concluido
+     *
+     * para isso faremos um unsubscribe nesse observable, evitando novos eventos
+     * utilizando em conjunto com o subscribe o metodo => takeUntil()
+     */
+    acompanhamentoUpload.pipe(takeUntil(continua))
+      .subscribe(() => {
+        console.log(this.progresso.estado);
+        console.log(this.progresso.status);
+
+        if (this.progresso.status === 'concluido') {
+          continua.next(false);//produz um evento com o valor false,
+          //modificando o valor recebido no observable
+          //interrompendo o fluxo de streams do nosso interval
+        }
+      })
   }
 
   public preparaImagemUpload(event: Event): void {
