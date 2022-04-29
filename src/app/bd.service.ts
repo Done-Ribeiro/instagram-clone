@@ -10,6 +10,16 @@ export class Bd {
     firebase.storage().ref()
       .child(`imagens/${nomeImagem}`)
       .put(publicacao.imagem)
+      .on(firebase.storage.TaskEvent.STATE_CHANGED,
+        //acompanhamento do progresso do upload
+        (snapshot: any) => console.log(snapshot),
+        (erro: Error) => console.log(erro),
+        () => {
+          //finalização do processo
+          console.log('upload completo')
+        }
+      )//listener on(recebe um evento)
+
 
     // firebase.database().ref(`publicacoes/${btoa(publicacao.email)}`)
     //   .push( { titulo: publicacao.titulo } )
