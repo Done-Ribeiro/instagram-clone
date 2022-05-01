@@ -44,4 +44,14 @@ export class Bd {
           )//listener on(recebe um evento)
       })
   }
+
+  public consultaPublicacoes(emailUsuario: string): any {
+    firebase.database().ref(`publicacoes/${btoa(emailUsuario)}`)
+      //on() -> listener | once() -> snapshot
+      //como parametro, passamos o evento que queremos executar
+      .once('value')
+      .then((snapshot: any) => {
+        console.log(snapshot.val())
+      })
+  }
 }
