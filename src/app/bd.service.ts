@@ -45,45 +45,47 @@ export class Bd {
       })
   }
 
-  public consultaPublicacoes(emailUsuario: string): any {
+  public consultaPublicacoes(emailUsuario: string): Promise<any> {
 
-    //consultar as publicações (database)
-    firebase.database().ref(`publicacoes/${btoa(emailUsuario)}`)
-      /**
-       * on() -> listener | once() -> snapshot
-       * como parametro, passamos o evento que queremos executar
-       */
-      .once('value')
-      .then((snapshot: any) => {
-        // console.log(snapshot.val())
-        let publicacoes: Array<any> = []
+    return new Promise((resolve, reject) => {
 
-        snapshot.forEach((childSnapshot: any) => {
+      //consultar as publicações (database)
+      firebase.database().ref(`publicacoes/${btoa(emailUsuario)}`)
+        /**
+         * on() -> listener | once() -> snapshot
+         * como parametro, passamos o evento que queremos executar
+         */
+        .once('value')
+        .then((snapshot: any) => {
+          // console.log(snapshot.val())
+          let publicacoes: Array<any> = []
 
-          let publicacao = childSnapshot.val()
+          snapshot.forEach((childSnapshot: any) => {
 
-          //consultar a url da imagem (storage)
-          firebase.storage().ref()
-            .child(`imagens/${childSnapshot.key}`)
-            .getDownloadURL()
-            .then((url: string) => {
-              //montando objeto -> publicacao = { titulo, url_imagem }
-              publicacao.url_imagem = url
+            let publicacao = childSnapshot.val()
 
-              //consultar o nome do usuário
-              firebase.database().ref(`usuario_detalhe/${btoa(emailUsuario)}`)
-                .once('value')
-                .then((snapshot: any) => {
-                  publicacao.nome_usuario = snapshot.val().nome_usuario
+            //consultar a url da imagem (storage)
+            firebase.storage().ref()
+              .child(`imagens/${childSnapshot.key}`)
+              .getDownloadURL()
+              .then((url: string) => {
+                //montando objeto -> publicacao = { titulo, url_imagem }
+                publicacao.url_imagem = url
 
-                  //colocando a publicacao no array de publicacoes
-                  publicacoes.push(publicacao)
-                })
-            })
+                //consultar o nome do usuário
+                firebase.database().ref(`usuario_detalhe/${btoa(emailUsuario)}`)
+                  .once('value')
+                  .then((snapshot: any) => {
+                    publicacao.nome_usuario = snapshot.val().nome_usuario
+
+                    //colocando a publicacao no array de publicacoes
+                    publicacoes.push(publicacao)
+                  })
+              })
+          })
+          resolve(publicacoes)
         })
+    })
 
-        console.log(publicacoes)
-
-      })
   }
 }
