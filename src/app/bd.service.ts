@@ -46,27 +46,29 @@ export class Bd {
   }
 
   public consultaPublicacoes(emailUsuario: string): Promise<any> {
-
     return new Promise((resolve, reject) => {
-
       //consultar as publicações (database)
       firebase.database().ref(`publicacoes/${btoa(emailUsuario)}`)
-        /**
-         * on() -> listener | once() -> snapshot
-         * como parametro, passamos o evento que queremos executar
-         */
-        .once('value')
+        .orderByKey()//ordenar pela KEY
+        .once('value')//on() -> listener | once() -> snapshot
         .then((snapshot: any) => {
           // console.log(snapshot.val())
           let publicacoes: Array<any> = []
 
           snapshot.forEach((childSnapshot: any) => {
-
             let publicacao = childSnapshot.val()
+            publicacao.key = childSnapshot.key
+
+            publicacoes.push(publicacao)
+          })
+          return publicacoes.reverse()//inverte ordem do array
+        })
+        .then((publicacoes: any) => {
+          publicacoes.forEach((publicacao: any) => {
 
             //consultar a url da imagem (storage)
             firebase.storage().ref()
-              .child(`imagens/${childSnapshot.key}`)
+              .child(`imagens/${publicacao.key}`)
               .getDownloadURL()
               .then((url: string) => {
                 //montando objeto -> publicacao = { titulo, url_imagem }
@@ -77,15 +79,12 @@ export class Bd {
                   .once('value')
                   .then((snapshot: any) => {
                     publicacao.nome_usuario = snapshot.val().nome_usuario
-
-                    //colocando a publicacao no array de publicacoes
-                    publicacoes.push(publicacao)
                   })
               })
           })
           resolve(publicacoes)
         })
     })
-
   }
+
 }
