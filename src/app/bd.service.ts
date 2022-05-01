@@ -46,12 +46,37 @@ export class Bd {
   }
 
   public consultaPublicacoes(emailUsuario: string): any {
+
+    //consultar as publicações (database)
     firebase.database().ref(`publicacoes/${btoa(emailUsuario)}`)
-      //on() -> listener | once() -> snapshot
-      //como parametro, passamos o evento que queremos executar
+      /**
+       * on() -> listener | once() -> snapshot
+       * como parametro, passamos o evento que queremos executar
+       */
       .once('value')
       .then((snapshot: any) => {
-        console.log(snapshot.val())
+        // console.log(snapshot.val())
+        let publicacoes: Array<any> = []
+
+        snapshot.forEach((childSnapshot: any) => {
+
+          let publicacao = childSnapshot.val()
+
+          //consultar a url da imagem (storage)
+          firebase.storage().ref()
+            .child(`imagens/${childSnapshot.key}`)
+            .getDownloadURL()
+            .then((url: string) => {
+              //montando objeto -> publicacao = { titulo, url_imagem }
+              publicacao.url_imagem = url
+
+              //colocando a publicacao no array de publicacoes
+              publicacoes.push(publicacao)
+            })
+        })
+
+        console.log(publicacoes)
+
       })
   }
 }
