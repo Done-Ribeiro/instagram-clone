@@ -70,8 +70,15 @@ export class Bd {
               //montando objeto -> publicacao = { titulo, url_imagem }
               publicacao.url_imagem = url
 
-              //colocando a publicacao no array de publicacoes
-              publicacoes.push(publicacao)
+              //consultar o nome do usuário
+              firebase.database().ref(`usuario_detalhe/${btoa(emailUsuario)}`)
+                .once('value')
+                .then((snapshot: any) => {
+                  publicacao.nome_usuario = snapshot.val().nome_usuario
+
+                  //colocando a publicacao no array de publicacoes
+                  publicacoes.push(publicacao)
+                })
             })
         })
 
